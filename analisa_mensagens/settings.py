@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'mensagens.apps.MensagensConfig',
     'django.contrib.contenttypes',
     'django.contrib.staticfiles',
 ]
