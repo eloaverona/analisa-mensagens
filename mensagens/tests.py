@@ -68,6 +68,25 @@ class MensagemModelTests(TestCase):
 
 
 class DatabaseHandlerTests(TestCase):
+    def setUp(self):
+        Mensagem.objects.all().delete()
+
+        mensagem1 = Mensagem(
+            data="2022-01-24", status="Em Espera",
+            texto="Estou bem chateado. Gostaria de fazer um pedido.")
+
+        mensagem2 = Mensagem(
+            data="2021-02-23", status="Aberto",
+            texto="""Gostaria de fazer um pedido. Preciso que resolvam um
+            problema.""")
+
+        mensagem3 = Mensagem(
+            data="2020-05-19", status="Fechado",
+            texto="ótima empresa. Olá, como vai?")
+        mensagem1.save()
+        mensagem2.save()
+        mensagem3.save()
+
     def test_insert_mensagem_success(self):
         """Verifica que é possível adicionar uma mensagem no banco de dados
         com sucesso
@@ -87,7 +106,6 @@ class DatabaseHandlerTests(TestCase):
 
     def test_fetch_mensagem_success(self):
         """Verifica que o método fetchMessage retorna a mensagem esperada"""
-        self.seed_mock_data_to_database()
         mensagens = list(Mensagem.objects.all())
         mensagemID = mensagens[0].id
         mensagemJSON = dbHandler.fetchMessage(mensagemID)
@@ -103,7 +121,6 @@ class DatabaseHandlerTests(TestCase):
         """Verifica que o método fetchMessage retorna um erro se uma id que não
             existe no banco de dados for fornecida
         """
-        self.seed_mock_data_to_database()
         try:
             dbHandler.fetchMessage(14545)
         except Exception:
@@ -115,7 +132,6 @@ class DatabaseHandlerTests(TestCase):
         """Verifica que o método listMessages retorna uma lista de mensagens
         em formato string de JSON
         """
-        self.seed_mock_data_to_database()
         mensagens = list(Mensagem.objects.all())
         mensagensJSON = dbHandler.listMessages()
         mensagensDB = json.loads(mensagensJSON)
@@ -134,7 +150,6 @@ class DatabaseHandlerTests(TestCase):
 
     def test_update_mensagem_success(self):
         """Verifica que o método updateMessage atualiza a mensagem esperada"""
-        self.seed_mock_data_to_database()
         mensagens = list(Mensagem.objects.all())
         mensagemID = mensagens[0].id
         newStatus = "Atualizado"
@@ -158,7 +173,6 @@ class DatabaseHandlerTests(TestCase):
 
     def test_delete_mensagem_success(self):
         """Verifica que o método deleteMessage deleta a mensagem esperada"""
-        self.seed_mock_data_to_database()
         mensagens = list(Mensagem.objects.all())
         mensagensCount = len(mensagens)
         mensagemID = mensagens[0].id
@@ -172,20 +186,3 @@ class DatabaseHandlerTests(TestCase):
         self.assertEqual(mensagem["status"], mensagens[0].status)
         self.assertEqual(mensagem["texto"], mensagens[0].texto)
 
-    def seed_mock_data_to_database(self):
-        mensagem1 = Mensagem(
-            data="2022-01-24", status="Em Espera",
-            texto="Estou bem chateado. Gostaria de fazer um pedido.")
-
-        mensagem2 = Mensagem(
-            data="2021-02-23", status="Aberto",
-            texto="""Gostaria de fazer um pedido. Preciso que resolvam um
-            problema.""")
-
-        mensagem3 = Mensagem(
-            data="2020-05-19", status="Fechado",
-            texto="ótima empresa. Olá, como vai?")
-
-        mensagem1.save()
-        mensagem2.save()
-        mensagem3.save()
