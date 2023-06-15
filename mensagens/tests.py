@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.urls import reverse
 import json
 from .models import Mensagem
 from datetime import date
@@ -186,3 +187,35 @@ class DatabaseHandlerTests(TestCase):
         self.assertEqual(mensagem["status"], mensagens[0].status)
         self.assertEqual(mensagem["texto"], mensagens[0].texto)
 
+class ListMessagesViewsTest(TestCase):
+    def test_list_mensagens_view_success(self):
+        """Avalia se o enpoint /mensagens retorna uma lista de mensagens como
+        esperado
+        """
+        response = self.client.get(reverse("mensagens:list"))
+        self.assertEquals(response.status_code, 200)
+
+        messages = list(Mensagem.objects.all())
+
+        responseMessages = json.loads(response.content)
+        self.assertEqual(len(messages), len(responseMessages))
+        for i in range(len(messages)):
+            self.assertEqual(responseMessages[i]["id"], messages[i].id.int)
+            self.assertEqual(
+                responseMessages[i]["data"],
+                messages[i].data.strftime("%Y-%m-%d"))
+            self.assertEqual(
+                responseMessages[i]["status"],
+                messages[i].status)
+            self.assertEqual(
+                responseMessages[i]["texto"],
+                messages[i].texto)
+
+    def test_list_empty_mensagens_success(self):
+        """Avalia caso o banco de dados esteja vazio, o endpont /mensagens          retorna uma lista vazia
+        """
+        Mensagem.objects.all().delete()
+        response = self.client.get(reverse("mensagens:list"))
+        self.assertEquals(response.status_code, 200)
+        responseMessages = json.loads(response.content)
+        self.assertEquals(0, len(responseMessages))
