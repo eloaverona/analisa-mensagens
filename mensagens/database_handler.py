@@ -44,19 +44,23 @@ def fetchMessage(messageID):
     return message.toJSON()
 
 
-def listMessages():
+def listMessages(jsonFormat=True):
     """Retorna uma lista com todas as mensagens no banco de dados
-
+    Args:
+        jsonFormat: Se True, retorna as mensagens em formato JSON
+        se False, retorna as mensagens como um objeto Mensage.
+        default = True
     Returns:
-        Uma lista com as mensagens serializada em formato de string JSON
+        Uma lista com as mensagens
     Raises:
         Exception: caso houver uma falha ao acessar o banco de dados
     """
     try:
         messages = list(Mensagem.objects.all())
-        messages = list(map(lambda m: m.toJSON(), messages))
-        messages = ", ".join(messages)
-        messages = "[" + messages + "]"
+        if jsonFormat:
+            messages = list(map(lambda m: m.toJSON(), messages))
+            messages = ", ".join(messages)
+            messages = "[" + messages + "]"
     except Exception as error:
         raise Exception("Erro ao acessar o banco de dados: {}".format(error))
     return messages

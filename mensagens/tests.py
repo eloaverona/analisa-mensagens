@@ -222,6 +222,31 @@ class ListMessagesViewsTest(TestCase):
         self.assertEquals(response.status_code, 200)
         responseMessages = json.loads(response.content)
         self.assertEquals(0, len(responseMessages))
+
+    def test_analyse_sentiment_view_success(self):
+        """Avalia se o enpoint /mensagens/sentiment retorna uma lista de
+         mensagens, com os resultados da análise de sentimento como esperado
+        """
+        response = self.client.get(reverse("mensagens:sentiment"))
+        self.assertEquals(response.status_code, 200)
+
+        messages = list(Mensagem.objects.all())
+
+        responseMessages = json.loads(response.content)
+        self.assertEqual(len(messages), len(responseMessages))
+        for i in range(len(messages)):
+            self.assertEqual(responseMessages[i]["id"], messages[i].id.int)
+            self.assertEqual(
+                responseMessages[i]["data"],
+                messages[i].data.strftime("%Y-%m-%d"))
+            self.assertEqual(
+                responseMessages[i]["status"],
+                messages[i].status)
+            self.assertEqual(
+                responseMessages[i]["texto"],
+                messages[i].texto)
+            self.assertTrue("valorSentimento" in responseMessages[i])
+            self.assertTrue("sentimento" in responseMessages[i])
 class MessageProcessorTest(TestCase):
     def test_positive_sentiment_test(self):
         """Testa se o algoritmo de análise de sentimento avalia uma frase
