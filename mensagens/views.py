@@ -1,7 +1,7 @@
-from django.shortcuts import render
 from django.http import HttpResponse
 from . import database_handler as dbHandler
 import json
+import logging
 
 
 def listMessages(request):
@@ -17,6 +17,7 @@ def listMessages(request):
         messages = dbHandler.listMessages()
         response.write(messages)
     except Exception as error:
+        logging.error(error)
         errorMessage = json.dumps({
             "error": {
                 "code": 500,
