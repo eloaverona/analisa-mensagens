@@ -1,13 +1,12 @@
 from .models import Mensagem
-import json
 
 
 def insertMessage(newMessage):
     """Adiciona uma nova mensagem ao banco de dados
 
     Args:
-        newMessage: A mensagem a ser adicionada serializada no formato de string
-        JSON
+        newMessage: A mensagem a ser adicionada serializada no formato de
+        string JSON
     Raises:
         Exception: Um erro ocorreu ao deserializar o JSON ou ao se comunicar
         com o banco de dados
@@ -39,7 +38,7 @@ def fetchMessage(messageID):
     try:
         message = Mensagem.objects.get(pk=messageID)
     except Mensagem.DoesNotExist:
-        raise Exception("Messagem com id {} não existe".format(message_id))
+        raise Exception("Messagem com id {} não existe".format(messageID))
     except Exception as error:
         raise Exception("Erro ao acessar o banco de dados: {}".format(error))
     return message.toJSON()
@@ -80,10 +79,11 @@ def deleteMessage(messageID):
         jsonEncodedMessage = message.toJSON()
         message.delete()
     except Mensagem.DoesNotExist:
-        raise Exception("Messagem com id {} não existe".format(message_id))
+        raise Exception("Messagem com id {} não existe".format(messageID))
     except Exception as error:
         raise Exception("Erro ao acessar o banco de dados: {}".format(error))
     return jsonEncodedMessage
+
 
 def updateMessage(messageID, jsonData):
     """Atualiza uma mensagem específica no banco de dados
@@ -106,8 +106,9 @@ def updateMessage(messageID, jsonData):
         message.data = updatedMessage.data
         message.save()
     except Mensagem.DoesNotExist:
-        raise Exception("Messagem com id {} não existe".format(message_id))
+        raise Exception("Messagem com id {} não existe".format(messageID))
     except ValueError as error:
-        raise Exception("Os dados do JSON não são uma mensagem válida: {}".format(error))
+        raise Exception(
+            "Os dados do JSON não são uma mensagem válida: {}".format(error))
     except Exception as error:
         raise Exception("Erro ao acessar o banco de dados: {}".format(error))
