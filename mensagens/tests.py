@@ -5,6 +5,7 @@ from .models import Mensagem
 from datetime import date
 from jsonschema.exceptions import ValidationError
 import mensagens.database_handler as dbHandler
+from mensagens.message_processor import MessageProcessor
 
 
 class MensagemModelTests(TestCase):
@@ -187,6 +188,7 @@ class DatabaseHandlerTests(TestCase):
         self.assertEqual(mensagem["status"], mensagens[0].status)
         self.assertEqual(mensagem["texto"], mensagens[0].texto)
 
+
 class ListMessagesViewsTest(TestCase):
     def test_list_mensagens_view_success(self):
         """Avalia se o enpoint /mensagens retorna uma lista de mensagens como
@@ -212,10 +214,27 @@ class ListMessagesViewsTest(TestCase):
                 messages[i].texto)
 
     def test_list_empty_mensagens_success(self):
-        """Avalia caso o banco de dados esteja vazio, o endpont /mensagens          retorna uma lista vazia
+        """Avalia caso o banco de dados esteja vazio, o endpont /mensagens
+        retorna uma lista vazia
         """
         Mensagem.objects.all().delete()
         response = self.client.get(reverse("mensagens:list"))
         self.assertEquals(response.status_code, 200)
         responseMessages = json.loads(response.content)
         self.assertEquals(0, len(responseMessages))
+class MessageProcessorTest(TestCase):
+    def test_positive_sentiment_test(self):
+        """Testa se o algoritmo de análise de sentimento avalia uma frase
+        positiva corretamente"""
+        text = "Sou uma frase feliz, feliz, feliz"
+        messageProcessor = MessageProcessor()
+        score = messageProcessor.analyseSentiment(text)
+        self.assertTrue(score > 0)
+
+    def test_negative_sentiment_test(self):
+        """Testa se o algoritmo de análise de sentimento avalia uma frase
+        negativa corretamente"""
+        text = "Sou uma frase triste, triste, triste"
+        messageProcessor = MessageProcessor()
+        score = messageProcessor.analyseSentiment(text)
+        self.assertTrue(score < 0)
