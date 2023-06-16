@@ -11,5 +11,8 @@ urlpatterns = [
     path(
         "sentiment/",
         views.analyseMessagesSentiment,
-        name="sentiment")]
-
+        name="sentiment"),
+    path(
+        "sentiment/count/",
+        views.countMessagesSentiment,
+        name="sentimentCount")]

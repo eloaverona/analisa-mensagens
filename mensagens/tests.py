@@ -247,6 +247,20 @@ class ListMessagesViewsTest(TestCase):
                 messages[i].texto)
             self.assertTrue("valorSentimento" in responseMessages[i])
             self.assertTrue("sentimento" in responseMessages[i])
+
+    def test_analyse_sentiment_count_view_success(self):
+        """Avalia se o enpoint /mensagens/sentiment/count retorna a conta
+         de quantas mensagens postivas, negativas e neutras tem no
+        banco de dados
+        """
+        response = self.client.get(reverse("mensagens:sentimentCount"))
+        self.assertEquals(response.status_code, 200)
+        responseCount = json.loads(response.content)
+        self.assertTrue("mensagensPositivas" in responseCount)
+        self.assertTrue("mensagensNegativas" in responseCount)
+        self.assertTrue("mensagensNeutras" in responseCount)
+
+
 class MessageProcessorTest(TestCase):
     def test_positive_sentiment_test(self):
         """Testa se o algoritmo de análise de sentimento avalia uma frase
