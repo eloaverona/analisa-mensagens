@@ -292,3 +292,27 @@ class MessageProcessorTest(TestCase):
         self.assertTrue(analysedMessages[2]["valorSentimento"] == 0)
         self.assertEquals(analysedMessages[2]["sentimento"], "neutro")
 
+    def test_messages_sentiment_count(self):
+        """Testa que o método countMessagesSentiment retorna os resultados
+            esperados
+        """
+        dataMensagem = "2000-5-23"
+        statusMensagem = "Em Espera"
+        positiveMessage = Mensagem(
+            data=dataMensagem, status=statusMensagem,
+            texto="Sou uma frase feliz feliz feliz")
+        positiveMessage2 = Mensagem(
+            data=dataMensagem,
+            status=statusMensagem,
+            texto="Sou uma frase feliz também")
+        neutralMessage = Mensagem(
+            data=dataMensagem,
+            status=statusMensagem,
+            texto="Sou uma frase")
+        messageProcessor = MessageProcessor()
+        count = json.loads(
+            messageProcessor.countSentiment(
+                [positiveMessage, positiveMessage2, neutralMessage]))
+        self.assertEquals(count["mensagensPositivas"], 2)
+        self.assertEquals(count["mensagensNegativas"], 0)
+        self.assertEquals(count["mensagensNeutras"], 1)

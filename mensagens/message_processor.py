@@ -77,3 +77,37 @@ class MessageProcessor():
                             "{}".format(error))
 
         return messagesJson
+
+    def countSentiment(self, messages):
+        """Conta quantas mensagens positivas, negativas e neutras tem em uma
+        lista
+            args:
+                messages: uma listas de mensagens
+            returns:
+                a contagem de mensagens positivas, negativas e neutras em
+                um objeto json
+
+        """
+        try:
+            countNegative = 0
+            countPositive = 0
+            countNeutro = 0
+            for message in messages:
+                sentimentScore = self.analyseSentiment(message.texto)
+                if sentimentScore > 0:
+                    countPositive += 1
+                elif sentimentScore < 0:
+                    countNegative += 1
+                else:
+                    countNeutro += 1
+
+            messagesJson = json.dumps({
+                "mensagensPositivas": countPositive,
+                "mensagensNegativas": countNegative,
+                "mensagensNeutras": countNeutro,
+            })
+        except Exception as error:
+            raise Exception("Ocorreu um erro enquanto processava mensagens." +
+                            "{}".format(error))
+
+        return messagesJson
