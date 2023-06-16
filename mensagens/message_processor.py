@@ -44,3 +44,36 @@ class MessageProcessor():
             textSentiment = textSentiment + wordPolarity
         return textSentiment
 
+    def processMessagesSentiment(self, messages):
+        """ Analisa o texto de mensagens e retorna uma avaliação se essas
+        mensagens são positivas, negativas, ou neutras.
+
+        args:
+            messages: uma lista de Mensagens
+        returns:
+            uma lista de mensagens e sua avaliação de sentimentos em
+            formato JSON
+        """
+        try:
+            analysedMessages = []
+            for message in messages:
+                sentimentScore = self.analyseSentiment(message.texto)
+                sentiment = "neutro"
+                if sentimentScore > 0:
+                    sentiment = "positivo"
+                elif sentimentScore < 0:
+                    sentiment = "negativo"
+                analysedMessages.append({
+                    "id": message.id.int,
+                    "status": message.status,
+                    "data": str(message.data),
+                    "texto": message.texto,
+                    "valorSentimento": sentimentScore,
+                    "sentimento": sentiment,
+                })
+            messagesJson = json.dumps(analysedMessages)
+        except Exception as error:
+            raise Exception("Ocorreu um erro enquanto processava mensagens." +
+                            "{}".format(error))
+
+        return messagesJson

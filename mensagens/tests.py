@@ -238,3 +238,32 @@ class MessageProcessorTest(TestCase):
         messageProcessor = MessageProcessor()
         score = messageProcessor.analyseSentiment(text)
         self.assertTrue(score < 0)
+
+    def test_messages_sentiment_process(self):
+        """Testa que o método analyseMessagesSentiment retorna os resultados
+            esperados
+        """
+        dataMensagem = "2000-5-23"
+        statusMensagem = "Em Espera"
+        positiveMessage = Mensagem(
+            data=dataMensagem, status=statusMensagem,
+            texto="Sou uma frase feliz feliz feliz")
+        negativeMessage = Mensagem(
+            data=dataMensagem,
+            status=statusMensagem,
+            texto="Sou uma frase triste")
+        neutralMessage = Mensagem(
+            data=dataMensagem,
+            status=statusMensagem,
+            texto="Sou uma frase")
+        messageProcessor = MessageProcessor()
+        analysedMessages = json.loads(
+            messageProcessor.processMessagesSentiment(
+                [positiveMessage, negativeMessage, neutralMessage]))
+        self.assertTrue(analysedMessages[0]["valorSentimento"] > 0)
+        self.assertEquals(analysedMessages[0]["sentimento"], "positivo")
+        self.assertTrue(analysedMessages[1]["valorSentimento"] < 0)
+        self.assertEquals(analysedMessages[1]["sentimento"], "negativo")
+        self.assertTrue(analysedMessages[2]["valorSentimento"] == 0)
+        self.assertEquals(analysedMessages[2]["sentimento"], "neutro")
+
