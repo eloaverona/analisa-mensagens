@@ -18,7 +18,7 @@ from django.urls import include, path
 
 urlpatterns = [
     path(
-        "mensagens",
+        "mensagens/",
         include(
             "mensagens.urls",
             namespace="mensagens"))]
